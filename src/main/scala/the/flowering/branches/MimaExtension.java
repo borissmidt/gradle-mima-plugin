@@ -22,7 +22,6 @@ public class MimaExtension {
     private final Property<Boolean> failOnException;
     private final SetProperty<Exclude> exclude;
     private final Property<Boolean> reportSignatureProblems;
-    private final Property<String> buildOutputDirectory;
     private final Property<String> direction;
     private final Property<SourceSet> sourceSet;
     private final Provider<GroupName> oldGroupName;
@@ -35,7 +34,6 @@ public class MimaExtension {
         this.failOnException = project.getObjects().property(Boolean.class);
         this.exclude = project.getObjects().setProperty(Exclude.class);
         this.reportSignatureProblems = project.getObjects().property(Boolean.class);
-        this.buildOutputDirectory = project.getObjects().property(String.class);
         this.direction = project.getObjects().property(String.class);
         this.sourceSet = project.getObjects().property(SourceSet.class);
 
@@ -63,10 +61,6 @@ public class MimaExtension {
 
     public Property<Boolean> getReportSignatureProblems() {
         return reportSignatureProblems;
-    }
-
-    public Property<String> getBuildOutputDirectory() {
-        return buildOutputDirectory;
     }
 
     public Property<String> getDirection() {

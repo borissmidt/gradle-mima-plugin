@@ -57,8 +57,6 @@ class ReportBinaryIssues extends DefaultTask {
   private val exclude: SetProperty[Exclude] = objects.setProperty(classOf[Exclude])
   private val reportSignatureProblems: Property[Boolean] =
     objects.property(classOf[Boolean])
-  private val buildOutputDirectory: Property[String] =
-    objects.property(classOf[String])
   private val direction: Property[String] = objects.property(classOf[String])
   private val previousArtifact: Property[FileCollection] = objects.property(classOf[FileCollection])
   private val currentArtifact: Property[FileCollection] =
@@ -76,8 +74,7 @@ class ReportBinaryIssues extends DefaultTask {
   def getExclude(): SetProperty[Exclude] = exclude
   @Input
   def getReportSignatureProblems(): Property[Boolean] = reportSignatureProblems
-  @Input
-  def getBuildOutputDirectory(): Property[String] = buildOutputDirectory
+
   @Input
   def getDirection(): Property[String] = direction
   @Input

@@ -55,7 +55,6 @@ public class MimaPlugin implements Plugin<Project> {
                     task.getFailOnException().set(extension.getFailOnException());
                     task.getExclude().set(extension.getExclude());
                     task.getReportSignatureProblems().set(extension.getReportSignatureProblems());
-                    task.getBuildOutputDirectory().set(extension.getBuildOutputDirectory());
                     task.getDirection().set(extension.getDirection());
                     task.getPreviousArtifact().set(maybeOldApi.map(oldApi ->
                             oldApi.map(x -> x.jars).map(project::files).orElseGet(project::files)));;
