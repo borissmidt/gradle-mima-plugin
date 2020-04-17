@@ -1,6 +1,7 @@
 **warning still in pre release!!!!**
 
-Adds mima dependency check to your gradle project:
+Adds mima dependency check to your gradle project
+it looks for the previous version by looking at the git version tags:
 ```
 mima {
     direction = "backward"  can be "forward" , "backward" or "both"
