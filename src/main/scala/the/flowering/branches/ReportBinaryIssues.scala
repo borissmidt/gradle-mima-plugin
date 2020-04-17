@@ -151,18 +151,26 @@ class ReportBinaryIssues extends DefaultTask {
     val count = bcErrors.length + fcErrors.length
     val filteredCount = bcProblems.length + fcProblems.length - bcErrors.length - fcErrors.length
     val filteredMsg = if (filteredCount > 0) s" (filtered $filteredCount)" else ""
-    println(s"classPath: $classPath")
-    println(s"direction: ${direction}")
-    println(s"previousArtifact: ${previousArtifact}")
-    println(s"currentArtifact: ${currentArtifact}")
-    println(s"Found $count potential binary incompatibilities while checking against $filteredMsg")
-
-    log info (
+    log.debug(s"classPath: $classPath", "")
+    log.debug(s"direction: ${direction}", "")
+    log.debug(s"previousArtifact: ${previousArtifact}", "")
+    log.debug(s"currentArtifact: ${currentArtifact}", "")
+    log.debug(
       s"Found $count potential binary incompatibilities while checking against $filteredMsg",
       ""
     )
-    println(s"forwardErrors: ${fcErrors.mkString("\n")}")
-    println(s"backwardErrors: ${bcErrors.mkString("\n")}")
+
+    log.info(
+      s"Found $count potential binary incompatibilities while checking against $filteredMsg",
+      ""
+    )
+
+    log.lifecycle(
+      s"forwardErrors: ${fcErrors.map(_.description(getProject.getExtensions.findByType(classOf[MimaExtension]).oldVersion.get())).mkString("\n")}"
+    )
+    log.lifecycle(
+      s"backwardErrors: ${bcErrors.map(_.description(getProject.getExtensions.findByType(classOf[MimaExtension]).oldVersion.get())).mkString("\n")}"
+    )
     if (count > 0) {
       log.warn("found binary incompatibilities")
       if (failOnError) throw MiMaException("found binary incompatibilities", new RuntimeException())
