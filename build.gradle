@@ -1,0 +1,53 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'scala'
+    // Publishing to maven
+    id 'maven-publish'
+}
+
+group 'the.flowering.branches'
+version '0.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def mima = "0.7.0"
+    def scalaLangVersion = 2.12
+    compile "com.typesafe:mima-core_$scalaLangVersion:$mima"
+    implementation gradleApi()
+}
+
+gradlePlugin {
+    plugins {
+        mima {
+            id = "the.flowering.branches.gradle-mima"
+            implementationClass = "the.flowering.branches.MimaPlugin"
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+//jar {
+//    manifest {
+//        attributes 'Implementation-Title': 'Gradle mima plugin',
+//            'Implementation-Version': archiveVersion,
+//            'Built-Date': new Date(),
+//            'Built-JDK': System.getProperty('java.version'),
+//            'Built-Gradle': gradle.gradleVersion
+//    }
+//}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
