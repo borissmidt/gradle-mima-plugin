@@ -1,6 +1,5 @@
-package the.flowering.branches;
+package the.flowering.branches.mima;
 
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -14,7 +13,6 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.bundling.Jar;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Copyright (C) 15.04.20 - REstore NV
@@ -58,7 +56,6 @@ public class MimaPlugin implements Plugin<Project> {
                     task.getDirection().set(extension.getDirection());
                     task.getPreviousArtifact().set(maybeOldApi.map(oldApi ->
                             oldApi.map(x -> x.jars).map(project::files).orElseGet(project::files)));;
-                    task.getSourceSet().set(extension.getSourceSet());
                 }
         );
     }

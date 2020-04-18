@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package the.flowering.branches;
+package the.flowering.branches.mima;
 
 import java.io.File;
 import java.util.List;

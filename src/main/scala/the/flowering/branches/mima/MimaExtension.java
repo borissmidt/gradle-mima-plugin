@@ -1,12 +1,10 @@
-package the.flowering.branches;
+package the.flowering.branches.mima;
 
 import org.gradle.api.Project;
-import org.gradle.api.file.FileSystemLocation;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.SetProperty;
-import org.gradle.api.tasks.SourceSet;
 
 import java.util.stream.Collectors;
 
@@ -17,17 +15,15 @@ import java.util.stream.Collectors;
 public class MimaExtension {
     private final Property<String> oldGroup;
     private final Property<String> oldName;
-    final Property<String> oldVersion;
-
+    private final ListProperty<String> compareToVersion;
     private final Property<Boolean> failOnException;
     private final SetProperty<Exclude> exclude;
     private final Property<Boolean> reportSignatureProblems;
     private final Property<String> direction;
-    private final Property<SourceSet> sourceSet;
     private final Provider<GroupName> oldGroupName;
 
-    public Property<SourceSet> getSourceSet() {
-        return sourceSet;
+    public ListProperty<String> getCompareToVersion() {
+        return compareToVersion;
     }
 
     public MimaExtension(Project project) {
@@ -35,17 +31,16 @@ public class MimaExtension {
         this.exclude = project.getObjects().setProperty(Exclude.class);
         this.reportSignatureProblems = project.getObjects().property(Boolean.class);
         this.direction = project.getObjects().property(String.class);
-        this.sourceSet = project.getObjects().property(SourceSet.class);
 
         oldGroup = project.getObjects().property(String.class);
         oldName = project.getObjects().property(String.class);
-        oldVersion = project.getObjects().property(String.class);
+        compareToVersion = project.getObjects().listProperty(String.class);
         this.oldName.set(project.getProviders().provider(project::getName));
         this.oldGroup.set(
                 project.getProviders().provider(() -> project.getGroup().toString()));
-        this.oldVersion.set(project.getProviders()
+        this.compareToVersion.set(project.getProviders()
                 .provider(
-                        () -> GitVersionUtils.previousGitTags(project).findFirst().orElseGet(() -> "0.0.0")));
+                        () -> GitVersionUtils.previousGitTags(project).limit(1).collect(Collectors.toList())));
 
         this.oldGroupName = project.provider(() ->
                 new GroupName(oldGroup.get(),oldName.get()));
@@ -67,8 +62,9 @@ public class MimaExtension {
         return direction;
     }
 
+
     public GroupNameVersion groupNameVersion() {
-        return new GroupNameVersion(oldGroup.get(), oldName.get(), oldVersion.get());
+        return new GroupNameVersion(oldGroup.get(), oldName.get(), compareToVersion.get().get(0));
     }
 
     public Provider<GroupName> groupName() {

@@ -1,23 +1,23 @@
-package the.flowering.branches
+package the.flowering.branches.mima
 
 import java.io.File
 
-import com.typesafe.tools.mima.core.{Config, Problem, ProblemFilter, ProblemFilters}
+import com.typesafe.tools.mima.core.util.log.Logging
+import com.typesafe.tools.mima.core.{Problem, ProblemFilter, ProblemFilters}
 import com.typesafe.tools.mima.lib.MiMaLib
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.transform.InputArtifact
-import org.gradle.api.file.{ConfigurableFileCollection, FileCollection, FileSystemLocation}
+import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.{Property, SetProperty}
-import org.gradle.api.tasks.{CompileClasspath, Input, InputFiles, SourceSet, TaskAction}
+import org.gradle.api.tasks.{CompileClasspath, Input, SourceSet, TaskAction}
 import org.gradle.api.{DefaultTask, GradleException}
 import org.gradle.internal.exceptions.Contextual
+import org.slf4j.Logger
 
 import scala.collection.JavaConverters._
-import scala.tools.nsc.CloseableRegistry
-import scala.tools.nsc.classpath.{AggregateClassPath, ClassPathFactory}
+import scala.tools.nsc.classpath.AggregateClassPath
 import scala.tools.nsc.util.ClassPath
 @Contextual
-case class MiMaException(message: String, cause: Throwable) extends GradleException(message, cause)
+case class MiMaException(message: String, cause: Throwable)
+    extends GradleException(message, cause)
 
 /**
   * Copyright (C) 15.04.20 - REstore NV
@@ -43,32 +43,43 @@ object Direction {
 
   def unapply(s: String): Option[Direction] = s match {
     case "backward" | "backwards" => Some(Backward)
-    case "forward" | "forwards" => Some(Forward)
-    case "both" => Some(Both)
-    case _ => None
+    case "forward" | "forwards"   => Some(Forward)
+    case "both"                   => Some(Both)
+    case _                        => None
   }
 }
 
 class ReportBinaryIssues extends DefaultTask {
   private val log = getProject.getLogger
+  private val wrappedLogger = new Logging{
+    override def info(str: String): Unit = log.info(str, "")
+
+    override def debugLog(str: String): Unit = log.debug(str, "")
+
+    override def warn(str: String): Unit = log.warn(str, "")
+
+    override def error(str: String): Unit = log.error(str, "")
+  }
 
   def objects = getProject.getObjects
-  private val failOnException: Property[Boolean] = objects.property(classOf[Boolean])
-  private val exclude: SetProperty[Exclude] = objects.setProperty(classOf[Exclude])
+  private val failOnException: Property[Boolean] =
+    objects.property(classOf[Boolean])
+  private val exclude: SetProperty[Exclude] =
+    objects.setProperty(classOf[Exclude])
   private val reportSignatureProblems: Property[Boolean] =
     objects.property(classOf[Boolean])
   private val direction: Property[String] = objects.property(classOf[String])
-  private val previousArtifact: Property[FileCollection] = objects.property(classOf[FileCollection])
+  private val previousArtifact: Property[FileCollection] =
+    objects.property(classOf[FileCollection])
   private val currentArtifact: Property[FileCollection] =
     objects.property(classOf[FileCollection])
-  private val sourceSet: Property[SourceSet] =
-    objects.property(classOf[SourceSet])
+
 
   @Input def getPreviousArtifact(): Property[FileCollection] =
     previousArtifact
 
-  @Input def getSourceSet(): Property[SourceSet] = sourceSet
-  @CompileClasspath def getCurrentArtifact(): Property[FileCollection] = currentArtifact
+  @CompileClasspath def getCurrentArtifact(): Property[FileCollection] =
+    currentArtifact
 
   @Input
   def getExclude(): SetProperty[Exclude] = exclude
@@ -95,14 +106,25 @@ class ReportBinaryIssues extends DefaultTask {
     val filters = this.exclude
       .get()
       .asScala
-      .flatMap(pt => pt.packages.get().asScala.map(ProblemFilters.exclude(pt.problemType, _)))
+      .flatMap(
+        pt =>
+          pt.packages
+            .get()
+            .asScala
+            .map(ProblemFilters.exclude(pt.problemType, _))
+      )
       .toList
 
     val previousArtifact = this.previousArtifact
       .get()
       .asScala
       .headOption
-      .getOrElse(throw MiMaException("missing artifact setting", new IllegalArgumentException()))
+      .getOrElse(
+        throw MiMaException(
+          "missing artifact setting",
+          new IllegalArgumentException()
+        )
+      )
 
     //todo get project artifact
     reportErrors(
@@ -118,40 +140,32 @@ class ReportBinaryIssues extends DefaultTask {
     )
   }
 
-  private def reportErrors(
-      direction: Direction,
-      failOnError: Boolean,
-      filters: List[ProblemFilter],
-      previousArtifact: File,
-      currentArtifact: Set[File]
-    ) = {
-    def isReported(classification: String)(problem: Problem): Boolean = filters.forall { filter =>
-      if (filter(problem)) {
-        true
-      } else {
-        log.quiet(s"Filtered out: ${problem.description(classification)}")
-        log.quiet(s"    filtered by: $filter")
-        false
+  private def reportErrors(direction: Direction,
+                           failOnError: Boolean,
+                           filters: List[ProblemFilter],
+                           previousArtifact: File,
+                           currentArtifact: Set[File]) = {
+    def isReported(classification: String)(problem: Problem): Boolean =
+      filters.forall { filter =>
+        if (filter(problem)) {
+          true
+        } else {
+          log.quiet(s"Filtered out: ${problem.description(classification)}")
+          log.quiet(s"    filtered by: $filter")
+          false
+        }
       }
-    }
-
-    val classPath = reporterClassPath(
-      sourceSet
-        .get()
-        .getAllSource
-        .asScala
-        .map(_.getAbsolutePath)
-        .mkString(File.pathSeparator)
-    )
 
     val (bcProblems, fcProblems) =
-      runMima(classPath, direction, previousArtifact, currentArtifact.head)
+      runMima(AggregateClassPath.createAggregate(), direction, previousArtifact, currentArtifact.head)
+
     val bcErrors = bcProblems.filter(isReported("current"))
     val fcErrors = fcProblems.filter(isReported("other"))
     val count = bcErrors.length + fcErrors.length
     val filteredCount = bcProblems.length + fcProblems.length - bcErrors.length - fcErrors.length
-    val filteredMsg = if (filteredCount > 0) s" (filtered $filteredCount)" else ""
-    log.debug(s"classPath: $classPath", "")
+    val filteredMsg =
+      if (filteredCount > 0) s" (filtered $filteredCount)" else ""
+
     log.debug(s"direction: ${direction}", "")
     log.debug(s"previousArtifact: ${previousArtifact}", "")
     log.debug(s"currentArtifact: ${currentArtifact}", "")
@@ -173,33 +187,32 @@ class ReportBinaryIssues extends DefaultTask {
     )
     if (count > 0) {
       log.warn("found binary incompatibilities")
-      if (failOnError) throw MiMaException("found binary incompatibilities", new RuntimeException())
+      if (failOnError)
+        throw MiMaException(
+          "found binary incompatibilities",
+          new RuntimeException()
+        )
     }
   }
 
-  private def collectProblems(cp: ClassPath, oldJar: File, newJar: File) = { () =>
-    new MiMaLib(cp).collectProblems(oldJar, newJar)
+  private def collectProblems(cp: ClassPath, oldJar: File, newJar: File) = {
+    () =>
+      new MiMaLib(cp, wrappedLogger)
+        .collectProblems(oldJar, newJar)
   }
 
-  private def runMima(
-      classpath: ClassPath,
-      direction: Direction,
-      prevJar: File,
-      newJar: File
-    ): (List[Problem], List[Problem]) = {
+  private def runMima(classpath: ClassPath,
+                      direction: Direction,
+                      prevJar: File,
+                      newJar: File): (List[Problem], List[Problem]) = {
     val checkBC = collectProblems(classpath, prevJar, newJar)
     val checkFC = collectProblems(classpath, newJar, prevJar)
 
     direction match {
       case Direction.Backward => (checkBC(), Nil)
-      case Direction.Forward => (Nil, checkFC())
-      case Direction.Both => (checkBC(), checkFC())
+      case Direction.Forward  => (Nil, checkFC())
+      case Direction.Both     => (checkBC(), checkFC())
     }
   }
-
-  def reporterClassPath(classpath: String): ClassPath =
-    AggregateClassPath.createAggregate(
-      new ClassPathFactory(Config.settings, new CloseableRegistry).classesInPath(classpath): _*
-    )
 
 }

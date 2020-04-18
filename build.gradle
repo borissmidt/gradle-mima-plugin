@@ -1,6 +1,7 @@
 plugins {
     id 'java-gradle-plugin'
     id 'scala'
+    id "com.github.maiflai.scalatest" version "0.26"
     // Publishing to maven
     id 'maven-publish'
 }
@@ -15,8 +16,10 @@ repositories {
 dependencies {
     def mima = "0.7.0"
     def scalaLangVersion = 2.12
-    compile "com.typesafe:mima-core_$scalaLangVersion:$mima"
+    implementation "com.typesafe:mima-core_$scalaLangVersion:$mima"
+    testImplementation "org.scalatest:scalatest_$scalaLangVersion:3.1.1"
     implementation gradleApi()
+    testRuntime 'com.vladsch.flexmark:flexmark-profile-pegdown:0.35.10'
 }
 
 gradlePlugin {

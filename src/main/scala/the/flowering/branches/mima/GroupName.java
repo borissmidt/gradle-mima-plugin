@@ -1,4 +1,4 @@
-package the.flowering.branches;
+package the.flowering.branches.mima;
 
 public class GroupName {
     final String group;
@@ -7,6 +7,14 @@ public class GroupName {
     public GroupName(String group, String name) {
         this.group = group;
         this.name = name;
+    }
+
+    public GroupNameVersion withVersion(String version) {
+        return new GroupNameVersion(
+                group,
+                name,
+                version
+        );
     }
 
     String asString(){
