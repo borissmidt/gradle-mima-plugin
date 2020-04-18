@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'the.flowering.branches'
-version '0.0.0'
+version '0.0.0-RC1'
 
 repositories {
     mavenCentral()
@@ -40,17 +40,17 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 // The configuration example below shows the minimum required properties
 // configured to publish your plugin to the plugin portal
-//pluginBundle {
-//    website = "https://github.com/borissmidt/gradle-mima-plugin"
-//    vcsUrl = "https://github.com/borissmidt/gradle-mima-plugin"
-//    tags = listOf("mima", "scala", "binarycompatibility")
-//    description = 'a plugin to run scala mima on your library to check backwards compatibility'
-//    plugins {
-//        greetingsPlugin {
-//            mima = 'scala mima binary compatibility plugin'
-//        }
-//    }
-//}
+pluginBundle {
+    website = "https://github.com/borissmidt/gradle-mima-plugin"
+    vcsUrl = "https://github.com/borissmidt/gradle-mima-plugin"
+    tags = listOf("mima", "scala", "binarycompatibility")
+    description = 'a plugin to run scala mima on your library to check backwards compatibility'
+    plugins {
+        greetingsPlugin {
+            mima = 'scala mima binary compatibility plugin'
+        }
+    }
+}
 
 publishing {
     publications {
