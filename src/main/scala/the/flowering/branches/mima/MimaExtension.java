@@ -1,7 +1,7 @@
 package the.flowering.branches.mima;
 
+import groovy.lang.Closure;
 import org.gradle.api.NamedDomainObjectContainer;
-import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -18,7 +18,7 @@ public class MimaExtension {
     private final Property<String> oldName;
     private final SetProperty<String> compareToVersions;
     private final Property<Boolean> failOnException;
-    private final NamedDomainObjectContainer<Exclude> exclude;
+    //    private final NamedDomainObjectContainer<Exclude> exclude;
     private final Property<Boolean> reportSignatureProblems;
     private final Property<String> direction;
     private final Provider<GroupName> oldGroupName;
@@ -29,7 +29,7 @@ public class MimaExtension {
 
     public MimaExtension(Project project) {
         this.failOnException = project.getObjects().property(Boolean.class);
-        this.exclude = project.container(Exclude.class, name -> new Exclude(name, project.getObjects()));
+//        this.exclude = project.getObjects().domainObjectContainer(Exclude.class, name -> new Exclude(name));
         this.reportSignatureProblems = project.getObjects().property(Boolean.class);
         this.direction = project.getObjects().property(String.class);
 
@@ -44,16 +44,16 @@ public class MimaExtension {
                         () -> GitVersionUtils.previousGitTags(project).limit(1).collect(Collectors.toList())));
 
         this.oldGroupName = project.provider(() ->
-                new GroupName(oldGroup.get(),oldName.get()));
+                new GroupName(oldGroup.get(), oldName.get()));
     }
 
     public Property<Boolean> getFailOnException() {
         return failOnException;
     }
-
-    public NamedDomainObjectContainer<Exclude> getExclude() {
-        return exclude;
-    }
+//
+//    public NamedDomainObjectContainer<Exclude> getExclude() {
+//        return exclude;
+//    }
 
     public Property<Boolean> getReportSignatureProblems() {
         return reportSignatureProblems;
@@ -64,6 +64,11 @@ public class MimaExtension {
     }
 
     public Provider<GroupName> groupName() {
-       return oldGroupName;
+        return oldGroupName;
     }
+
+//    public void exclude(Closure config) {
+//        this.exclude.configure(config);
+//    }
+
 }

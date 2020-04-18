@@ -3,15 +3,22 @@ package the.flowering.branches.mima;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.SetProperty;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * Copyright (C) 15.04.20 - REstore NV
  */
 
 public class Exclude {
     private final String name;
-    private final SetProperty<String> packages;
+    private Set<String> packages;
 
-    public SetProperty<String> getPackages() {
+    public void setPackages(Set<String> packages) {
+        this.packages = packages;
+    }
+
+    public Set<String> getPackages() {
         return packages;
     }
 
@@ -19,8 +26,8 @@ public class Exclude {
         return name;
     }
 
-    public Exclude(String name, ObjectFactory objectFactory) {
+    public Exclude(String name) {
         this.name = name;
-        this.packages = objectFactory.setProperty(String.class);
+        this.packages = Collections.emptySet();
     }
 }

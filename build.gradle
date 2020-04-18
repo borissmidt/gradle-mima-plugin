@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'the.flowering.branches'
-version '0.0.0-RC1'
+version '0.0.0'
 
 repositories {
     mavenCentral()
@@ -23,6 +23,12 @@ dependencies {
     testRuntime 'com.vladsch.flexmark:flexmark-profile-pegdown:0.35.10'
 }
 
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
 gradlePlugin {
     plugins {
         mima {
@@ -32,22 +38,16 @@ gradlePlugin {
     }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
-
 // The configuration example below shows the minimum required properties
 // configured to publish your plugin to the plugin portal
 pluginBundle {
     website = "https://github.com/borissmidt/gradle-mima-plugin"
     vcsUrl = "https://github.com/borissmidt/gradle-mima-plugin"
-    tags = listOf("mima", "scala", "binarycompatibility")
+    tags = ["mima", "scala", "binarycompatibility", "compatibility"]
     description = 'a plugin to run scala mima on your library to check backwards compatibility'
-    plugins {
-        greetingsPlugin {
-            mima = 'scala mima binary compatibility plugin'
+    plugins{
+        mima{
+            displayName = "Scala mima gradle plugin"
         }
     }
 }

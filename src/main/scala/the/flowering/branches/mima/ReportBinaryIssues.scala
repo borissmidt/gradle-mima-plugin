@@ -61,12 +61,12 @@ class ReportBinaryIssues extends DefaultTask {
 
   def objects = getProject.getObjects
 
-  private val failOnException: Property[Boolean] =
-    objects.property(classOf[Boolean])
-  private val exclude: SetProperty[Exclude] =
-    objects.setProperty(classOf[Exclude])
-  private val reportSignatureProblems: Property[Boolean] =
-    objects.property(classOf[Boolean])
+  private val failOnException: Property[java.lang.Boolean] =
+    objects.property(classOf[java.lang.Boolean])
+  //  private val exclude: SetProperty[Exclude] =
+  //    objects.setProperty(classOf[Exclude])
+  private val reportSignatureProblems: Property[java.lang.Boolean] =
+  objects.property(classOf[java.lang.Boolean])
   private val direction: Property[String] = objects.property(classOf[String])
 
   private val compareToVersions: SetProperty[String] =
@@ -81,19 +81,21 @@ class ReportBinaryIssues extends DefaultTask {
   @CompileClasspath def getCurrentArtifact(): Property[FileCollection] =
     currentArtifact
 
-  @Input
-  def getExclude(): SetProperty[Exclude] = exclude
+  //
+  //  @Input
+  //  def getExclude(): SetProperty[Exclude] = exclude
 
   @Input
-  def getReportSignatureProblems(): Property[Boolean] = reportSignatureProblems
+  def getReportSignatureProblems(): Property[java.lang.Boolean] = reportSignatureProblems
 
   @Input
   def getDirection(): Property[String] = direction
+
   @Input
-  def getFailOnException(): Property[Boolean] = failOnException
+  def getFailOnException(): Property[java.lang.Boolean] = failOnException
 
   @TaskAction
-  def execute() = {
+  def checkForMimaErrors() = {
     val direction = Direction
       .unapply(this.direction.get())
       .getOrElse(
@@ -104,16 +106,15 @@ class ReportBinaryIssues extends DefaultTask {
       )
     val failOnException = this.failOnException.get()
 
-    val filters = this.exclude
-      .get()
-      .asScala
-      .flatMap(pt =>
-        pt.getPackages
-          .get()
-          .asScala
-          .map(ProblemFilters.exclude(pt.getName, _))
-      )
-      .toList
+    //    val filters = this.exclude
+    //      .get()
+    //      .asScala
+    //      .flatMap(pt =>
+    //        pt.getPackages
+    //          .asScala
+    //          .map(ProblemFilters.exclude(pt.getName, _))
+    //      )
+    //      .toList
     val groupName = getProject.getExtensions.getByType(classOf[MimaExtension]).groupName().get()
 
     val previousArtifacts = ResolveOldApi
@@ -146,7 +147,7 @@ class ReportBinaryIssues extends DefaultTask {
         reportErrors(
           direction,
           failOnException,
-          filters,
+          List(),
           getProject.files(previousArtifact.jars).getFiles.asScala.head,
           currentArtifact,
           groupVersionName
