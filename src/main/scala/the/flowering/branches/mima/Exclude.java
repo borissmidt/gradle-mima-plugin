@@ -8,15 +8,19 @@ import org.gradle.api.provider.SetProperty;
  */
 
 public class Exclude {
-    final String problemType;
-    final SetProperty<String> packages;
+    private final String name;
+    private final SetProperty<String> packages;
 
-    public String getProblemType() {
-        return problemType;
+    public SetProperty<String> getPackages() {
+        return packages;
     }
 
-    public Exclude(String problemType, ObjectFactory objectFactory) {
-        this.problemType = problemType;
+    public String getName() {
+        return name;
+    }
+
+    public Exclude(String name, ObjectFactory objectFactory) {
+        this.name = name;
         this.packages = objectFactory.setProperty(String.class);
     }
 }

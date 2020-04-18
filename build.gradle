@@ -4,6 +4,7 @@ plugins {
     id "com.github.maiflai.scalatest" version "0.26"
     // Publishing to maven
     id 'maven-publish'
+    id "com.gradle.plugin-publish" version "0.11.0"
 }
 
 group 'the.flowering.branches'
@@ -26,7 +27,7 @@ gradlePlugin {
     plugins {
         mima {
             id = "the.flowering.branches.gradle-mima"
-            implementationClass = "the.flowering.branches.MimaPlugin"
+            implementationClass = "the.flowering.branches.mima.MimaPlugin"
         }
     }
 }
@@ -36,13 +37,18 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     archiveClassifier = 'sources'
 }
 
-//jar {
-//    manifest {
-//        attributes 'Implementation-Title': 'Gradle mima plugin',
-//            'Implementation-Version': archiveVersion,
-//            'Built-Date': new Date(),
-//            'Built-JDK': System.getProperty('java.version'),
-//            'Built-Gradle': gradle.gradleVersion
+
+// The configuration example below shows the minimum required properties
+// configured to publish your plugin to the plugin portal
+//pluginBundle {
+//    website = "https://github.com/borissmidt/gradle-mima-plugin"
+//    vcsUrl = "https://github.com/borissmidt/gradle-mima-plugin"
+//    tags = listOf("mima", "scala", "binarycompatibility")
+//    description = 'a plugin to run scala mima on your library to check backwards compatibility'
+//    plugins {
+//        greetingsPlugin {
+//            mima = 'scala mima binary compatibility plugin'
+//        }
 //    }
 //}
 

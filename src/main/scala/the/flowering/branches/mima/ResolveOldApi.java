@@ -22,10 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 final class ResolveOldApi {
@@ -34,26 +31,25 @@ final class ResolveOldApi {
     private ResolveOldApi() {
     }
 
-    public static Provider<List<OldApi>> oldApiProvider(
-            Project project, MimaExtension extension) {
+    public static Provider<Map<GroupNameVersion, OldApi>> oldApiProvider(
+            Project project, Set<String> oldVersions) {
 
         return GradleUtils.memoisedProvider(
                 project,
                 () -> resolveOldApiAcrossAllOldVersions(
-                        project, extension));
+                        project, oldVersions));
     }
 
-    private static List<OldApi> resolveOldApiAcrossAllOldVersions(
-            Project project, MimaExtension extension) {
+    private static Map<GroupNameVersion, OldApi> resolveOldApiAcrossAllOldVersions(
+            Project project, Set<String> oldVersions) {
 
-        List<String> oldVersions = extension.getCompareToVersion().get();
-
-        GroupName oldGroupAndName = extension.groupName().get();
-        return oldVersions.stream().map(oldGroupAndName::withVersion)
-                .map(v -> resolveOldApiWithVersion(project, v))
+        return oldVersions.stream().map(GroupNameVersion::fromString)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .map(v -> resolveOldApiWithVersion(project, v).map(art -> new Pair<>(v, art)))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(Pair::getO1, Pair::getO2));
     }
 
     private static Optional<OldApi> resolveOldApiWithVersion(Project project, GroupNameVersion groupNameVersion) {
@@ -66,6 +62,7 @@ final class ResolveOldApi {
 
             return Optional.of(new OldApi(oldOnlyJar, oldJustDeps));
         } catch (OldApiConfigurations.CouldNotResolveOldApiException e) {
+            System.out.println(e.getMessage());
             return Optional.empty();
         }
     }

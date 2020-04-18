@@ -1,5 +1,6 @@
 package the.flowering.branches.mima;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -10,6 +11,21 @@ public class GroupNameVersion {
     final String group;
     final String name;
     final String version;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GroupNameVersion that = (GroupNameVersion) o;
+        return Objects.equals(group, that.group) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(group, name, version);
+    }
 
     public GroupNameVersion(String group, String name, String version) {
         this.group = group;
