@@ -1,7 +1,8 @@
-package the.flowering.branches.mima
+package flowering.branches.mima
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-class GroupNameVersionTest extends AnyFlatSpec with Matchers{
+class GroupNameVersionTest extends AnyFlatSpec with Matchers {
   "serdes" should "go back and forth from a gradle dependency string" in {
     val dependency = "group:name:version"
     val gnv = GroupNameVersion.fromString(dependency)

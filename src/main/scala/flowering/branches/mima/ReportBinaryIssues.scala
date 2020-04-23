@@ -1,4 +1,4 @@
-package the.flowering.branches.mima
+package flowering.branches.mima
 
 import java.io.File
 
@@ -66,7 +66,7 @@ class ReportBinaryIssues extends DefaultTask {
   //  private val exclude: SetProperty[Exclude] =
   //    objects.setProperty(classOf[Exclude])
   private val reportSignatureProblems: Property[java.lang.Boolean] =
-  objects.property(classOf[java.lang.Boolean])
+    objects.property(classOf[java.lang.Boolean])
   private val direction: Property[String] = objects.property(classOf[String])
 
   private val compareToVersions: SetProperty[String] =

@@ -1,4 +1,4 @@
-package the.flowering.branches.mima;
+package flowering.branches.mima;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

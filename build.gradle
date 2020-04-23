@@ -7,7 +7,7 @@ plugins {
     id "com.gradle.plugin-publish" version "0.11.0"
 }
 
-group 'the.flowering.branches'
+group 'flowering.branches'
 version '0.0.0'
 
 repositories {
@@ -32,8 +32,8 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 gradlePlugin {
     plugins {
         mima {
-            id = "the.flowering.branches.gradle-mima"
-            implementationClass = "the.flowering.branches.mima.MimaPlugin"
+            id = "flowering.branches.mima-gradle-plugin"
+            implementationClass = "flowering.branches.mima.MimaPlugin"
         }
     }
 }

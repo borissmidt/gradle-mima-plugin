@@ -1,10 +1,10 @@
 plugins {
     id 'scala'
     id 'maven-publish'
-    id 'the.flowering.branches.gradle-mima' version "0.0.0"
+    id 'flowering.branches.gradle-mima' version "0.0.0"
 }
 
-group 'the.flowering.branches'
+group 'flowering.branches'
 version '0.0.2'
 
 repositories {

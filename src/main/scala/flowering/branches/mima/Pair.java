@@ -1,4 +1,4 @@
-package the.flowering.branches.mima;
+package flowering.branches.mima;
 
 public class Pair<A, B> {
     public final A o1;

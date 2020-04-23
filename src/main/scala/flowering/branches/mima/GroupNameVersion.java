@@ -1,4 +1,4 @@
-package the.flowering.branches.mima;
+package flowering.branches.mima;
 
 import java.util.Objects;
 import java.util.Optional;

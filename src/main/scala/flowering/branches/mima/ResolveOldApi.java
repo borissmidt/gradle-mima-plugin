@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package the.flowering.branches.mima;
+package flowering.branches.mima;
 
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
