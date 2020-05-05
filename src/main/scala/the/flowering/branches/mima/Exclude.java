@@ -1,14 +1,13 @@
-package flowering.branches.mima;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ *  v. 2.0. If a copy of the MPL was not distributed with this file,
+ *  You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 
-import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.SetProperty;
+package the.flowering.branches.mima;
 
 import java.util.Collections;
 import java.util.Set;
-
-/**
- * Copyright (C) 15.04.20 - REstore NV
- */
 
 public class Exclude {
     private final String name;

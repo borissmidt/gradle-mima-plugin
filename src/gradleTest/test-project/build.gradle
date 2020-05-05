@@ -1,10 +1,16 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ *  v. 2.0. If a copy of the MPL was not distributed with this file,
+ *  You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 plugins {
     id 'scala'
     id 'maven-publish'
-    id 'flowering.branches.gradle-mima' version "0.0.0"
+    id 'the.flowering.branches.gradle-mima' version "0.0.0"
 }
 
-group 'flowering.branches'
+group 'the.flowering.branches'
 version '0.0.2'
 
 repositories {
